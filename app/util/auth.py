@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
+from logging import error
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -30,3 +31,12 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def encode_token(username):
+    if username:
+        return create_access_token(
+            data={"sub": username}, expires_delta=timedelta(weeks=5)
+        )
+    else:
+        return error
