@@ -6,6 +6,16 @@ KAKAO_AUTH_URI = "https://kauth.kakao.com/oauth/token"
 KAKAO_USER_URI = "https://kapi.kakao.com/v2/user/me"
 
 
+# kakao login
+
+"""
+1. 카카오 로그인 경로로 요청
+2. 카카오가 서버로 redirect
+3. redirect로 받은 인가코드로 카카오 인증
+4. 인증 완료 후 서버 토큰 발급
+"""
+
+
 def kakao_token(code: str):
     """
     카카오 인증코드를 받아 카카오 인증 api를 호출하고 토큰을 return 한다.
