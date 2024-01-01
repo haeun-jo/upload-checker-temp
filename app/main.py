@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Annotated, Union
-from fastapi import Body, Depends, FastAPI, Query
+from fastapi import Body, Depends, FastAPI, Query, Request
 from api_model.model import ChannelModel, CheckModel
 from database.query import add_channel, get_channel, add_check, get_check
 from util.auth import get_current_user
@@ -12,11 +12,16 @@ from starlette.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, HTTPBearer
 from util.oauth import kakao_login, kakao_token
 from util.auth import create_access_token, encode_token
-
+from fastapi.responses import StreamingResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 import logging
 
 oauth2_scheme = HTTPBearer()
+
+# template
+templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
 app.add_middleware(
@@ -46,6 +51,11 @@ http://localhost:8000/oauth/kakao/redirect?code=914rIhV3Epl2n9ls6YZL3Kh766OxdsqO
 """
 
 
+@app.get("/")
+async def home(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
 @app.get("/oauth/kakao/redirect", status_code=200)
 def kakao_user_login_api(code: str = Query(..., description="카카오 인증코드")):
     kakao_access_token = kakao_token(code).get("access_token")
@@ -64,7 +74,7 @@ def kakao_user_login_api(code: str = Query(..., description="카카오 인증코
     return {"access_token": token}
 
 
-@app.post("/channels", status_code=200)
+@app.post("/channel", status_code=200)
 async def post_channel_api(
     params: ChannelModel,
     token: HTTPBearer = Depends(oauth2_scheme),
