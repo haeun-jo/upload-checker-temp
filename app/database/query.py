@@ -1,5 +1,6 @@
 from database.conn import engineconn
 from database.schema import User, Channel, Check
+from sqlalchemy import cast, Date
 
 engine = engineconn()
 session = engine.sessionmaker()
@@ -53,15 +54,24 @@ def add_check(check):
         return None
 
 
-def get_check(user_id, channel_id):
+def get_check(user_id, channel_id, created_at=None):
     try:
-        data = (
+        if created_at:
+            print(created_at)
+            data = (
+                session.query(Check)
+                .filter(Check.check_user_id == user_id)
+                .filter(Check.check_channel_id == channel_id)
+                .filter(cast(Check.created_at, Date) == created_at)
+                .first()
+            )
+            return data
+        return (
             session.query(Check)
             .filter(Check.check_user_id == user_id)
             .filter(Check.check_channel_id == channel_id)
             .first()
         )
-        return data
 
     except:
         None

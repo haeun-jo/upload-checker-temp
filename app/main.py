@@ -47,7 +47,7 @@ http://localhost:8000/oauth/kakao/redirect?code=914rIhV3Epl2n9ls6YZL3Kh766OxdsqO
 
 
 @app.get("/oauth/kakao/redirect", status_code=200)
-def kakao_user_login(code: str = Query(..., description="카카오 인증코드")):
+def kakao_user_login_api(code: str = Query(..., description="카카오 인증코드")):
     kakao_access_token = kakao_token(code).get("access_token")
     kakao_user = kakao_login(kakao_access_token)
     nickname = kakao_user["properties"]["nickname"]
@@ -65,7 +65,7 @@ def kakao_user_login(code: str = Query(..., description="카카오 인증코드"
 
 
 @app.post("/channels", status_code=200)
-async def post_channel(
+async def post_channel_api(
     params: ChannelModel,
     token: HTTPBearer = Depends(oauth2_scheme),
 ):
@@ -88,7 +88,9 @@ async def post_channel(
 
 
 @app.post("/check", status_code=200)
-async def post_check(params: CheckModel, token: HTTPBearer = Depends(oauth2_scheme)):
+async def post_check_api(
+    params: CheckModel, token: HTTPBearer = Depends(oauth2_scheme)
+):
     input = params.dict()
 
     # check user
@@ -104,5 +106,21 @@ async def post_check(params: CheckModel, token: HTTPBearer = Depends(oauth2_sche
 
     # get check
     check_result = get_check(user.user_id, input.get("channel_id"))
+
+    return check_result
+
+
+@app.get("/check", status_code=200)
+async def get_check_api(
+    channel_id: int = Query(default=0), token: HTTPBearer = Depends(oauth2_scheme)
+):
+    # check user
+    user = await get_current_user(token)
+
+    # get current_date check
+    current_date_str = datetime.now().strftime("%Y-%m-%d")
+    check_result = get_check(
+        channel_id=channel_id, user_id=user.user_id, created_at=current_date_str
+    )
 
     return check_result
