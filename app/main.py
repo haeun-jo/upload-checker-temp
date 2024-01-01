@@ -178,7 +178,8 @@ async def get_check_channel_api(
         return "채널의 생성자가 아닙니다"
 
     # get checks of channel
-    checks = get_user_checks_channel(channel_id)
+    current_date_str = datetime.now().strftime("%Y-%m-%d")
+    checks = get_user_checks_channel(channel_id, current_date_str)
     print("checks: %s" % checks)
 
     return list(map(lambda x: x.user_name, checks))
@@ -216,7 +217,8 @@ async def dummy_check(
     add_check(check)
 
     # get check
-    check_result = get_check(user_id, channel_id)
+    today = datetime.now().strftime("%Y-%m-%d")
+    check_result = get_check(user_id, channel_id, today)
 
     return check_result
 

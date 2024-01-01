@@ -100,16 +100,24 @@ def get_check(user_id, channel_id, created_at=None):
         return None
 
 
-def get_user_checks_channel(channel_id: int) -> User:
+def get_user_checks_channel(channel_id: int, created_at=None) -> User:
     try:
-        data = (
+        if created_at is not None:
+            data = (
+                session.query(Check.check_user_id, User.user_name)
+                .join(User, Check.check_user_id == User.user_id)
+                .filter(Check.check_channel_id == channel_id)
+                .filter(cast(Check.created_at, Date) == created_at)
+                .group_by(Check.check_user_id)
+                .all()
+            )
+            return data
+        return (
             session.query(Check.check_user_id, User.user_name)
             .join(User, Check.check_user_id == User.user_id)
             .filter(Check.check_channel_id == channel_id)
             .group_by(Check.check_user_id)
             .all()
         )
-
-        return data
     except:
         return None
