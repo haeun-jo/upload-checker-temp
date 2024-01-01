@@ -41,16 +41,6 @@ Base.metadata.create_all(bind=engine.engine)
 config = Config()
 
 
-# kakao login
-
-"""
-1. 카카오 로그인 경로로 요청
-2. 카카오가 서버로 redirect
-3. redirect로 받은 인가코드로 카카오 인증
-4. 인증 완료 후 서버 토큰 발급
-"""
-
-
 """
 http://localhost:8000/oauth/kakao/redirect?code=914rIhV3Epl2n9ls6YZL3Kh766OxdsqOe-WQPokOlHqikSB1Neq4URoHYIgKPXRpAAABjMONm8Gxu3fh8M0xkQ
 """
@@ -73,6 +63,7 @@ def kakao_user_login(code: str = Query(..., description="카카오 인증코드"
     token = encode_token(nickname)
     return {"access_token": token}
 
+
 @app.post("/channels", status_code=200)
 async def post_channel(
     params: ChannelModel,
@@ -94,3 +85,24 @@ async def post_channel(
     # get channel
     channel_result = await get_channel(user.user_id)
     return channel_result
+
+
+@app.post("/check", status_code=200)
+async def post_check(params: CheckModel, token: HTTPBearer = Depends(oauth2_scheme)):
+    input = params.dict()
+
+    # check user
+    user = await get_current_user(token)
+
+    # check
+    check = Check(
+        check_channel_id=input.get("channel_id"),
+        check_user_id=user.user_id,
+    )
+
+    add_check(check)
+
+    # get check
+    check_result = get_check(user.user_id, input.get("channel_id"))
+
+    return check_result
