@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from typing import Union
 from fastapi import FastAPI, Query
 from database.conn import engineconn
@@ -5,11 +6,15 @@ from database.base import Base
 from database.schema import User
 from config import Config
 from starlette.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
+from logging import error
+from auth import create_access_token
 
 
 import logging
-import json
 import httpx
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI()
 app.add_middleware(
@@ -54,14 +59,31 @@ http://localhost:8000/oauth/kakao/redirect?code=914rIhV3Epl2n9ls6YZL3Kh766OxdsqO
 """
 
 
-@app.get("/oauth/kakao/redirect")
+def encode_token(username):
+    if username:
+        return create_access_token(
+            data={"sub": username}, expires_delta=timedelta(weeks=5)
+        )
+    else:
+        return error
+
+
+@app.get("/oauth/kakao/redirect", status_code=200)
 def kakao_user_login(code: str = Query(..., description="카카오 인증코드")):
-    token = kakao_token(code).get("access_token")
-    kakao_user = kakao_login(token)
+    kakao_access_token = kakao_token(code).get("access_token")
+    kakao_user = kakao_login(kakao_access_token)
     nickname = kakao_user["properties"]["nickname"]
 
     # check user exist on DB
-    return session.query(User).all()
+    if not session.query(User).filter(User.user_name == nickname).all():
+        print("User already exists")
+        # add user
+        user = User(user_name=nickname)
+        session.add(user)
+
+    # create token
+    token = encode_token(nickname)
+    return {"access_token": token}
 
 
 def kakao_token(code: str):
@@ -69,7 +91,6 @@ def kakao_token(code: str):
     카카오 인증코드를 받아 카카오 인증 api를 호출하고 토큰을 return 한다.
     """
 
-    print(config.MYSQL_DATABASE)
     # send request to KAKAO auth
     with httpx.Client() as client:
         header = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
