@@ -1,7 +1,8 @@
 import httpx
 
 KAKAO_APP_KEY = "635065823fa42e337885faea9b31f3f4"
-KAKAO_REDIRECT_URI = "http://localhost:8000/oauth/kakao/redirect"
+# KAKAO_REDIRECT_URI = "http://localhost:8000/oauth/kakao/redirect"
+KAKAO_REDIRECT_URI = "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app/oauth/kakao/redirect"
 KAKAO_AUTH_URI = "https://kauth.kakao.com/oauth/token"
 KAKAO_USER_URI = "https://kapi.kakao.com/v2/user/me"
 
@@ -32,6 +33,7 @@ def kakao_token(code: str):
         }
         response = client.post(url=KAKAO_AUTH_URI, headers=header, data=body)
         result = response.json()
+        print("kakao_token", result)
 
     return result
 
