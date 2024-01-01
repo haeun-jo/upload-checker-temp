@@ -74,4 +74,19 @@ def get_check(user_id, channel_id, created_at=None):
         )
 
     except:
-        None
+        return None
+
+
+def get_user_checks_channel(channel_id: int) -> User:
+    try:
+        data = (
+            session.query(Check.check_user_id, User.user_name)
+            .join(User, Check.check_user_id == User.user_id)
+            .filter(Check.check_channel_id == channel_id)
+            .group_by(Check.check_user_id)
+            .all()
+        )
+
+        return data
+    except:
+        return None

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Annotated, Union
 from fastapi import Body, Depends, FastAPI, Query, Request
 from api_model.model import ChannelModel, CheckModel
-from database.query import add_channel, get_channel, add_check, get_check
+    get_user_checks_channel,
 from util.auth import get_current_user
 from database.conn import engineconn
 from database.base import Base
@@ -146,3 +146,29 @@ async def get_check_api(
     )
 
     return check_result
+
+@app.get("/channel/check", status_code=200)
+async def get_check_channel_api(
+    channel_id: int = Query(default=0), token: HTTPBearer = Depends(oauth2_scheme)
+):
+    """
+    채널의 생성자가 사용합니다. 채널 내의 오늘 기준 체크한 사람의 목록을 확인힐 수 있습니다.
+    """
+
+    # check user
+    user = await get_current_user(token)
+    print("user: %s" % user.user_id)
+
+    # check channel creator
+    channel = await get_channel(channel_id)
+    print("channel: %s" % channel.channel_creator_id, channel.channel_id)
+    if channel is None:
+        return None
+    if channel.channel_creator_id != user.user_id:
+        return "채널의 생성자가 아닙니다"
+
+    # get checks of channel
+    checks = get_user_checks_channel(channel_id)
+    print("checks: %s" % checks)
+
+    return list(map(lambda x: x.user_name, checks))
