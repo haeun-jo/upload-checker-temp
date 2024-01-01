@@ -41,6 +41,15 @@ async def get_channel(creator_id, channel_name):
         None
 
 
+async def get_channel(channel_id):
+    try:
+        data = session.query(Channel).filter(Channel.channel_id == channel_id).first()
+        return data
+
+    except:
+        None
+
+
 ################################################################
 # check
 ################################################################
