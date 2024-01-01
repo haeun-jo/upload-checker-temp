@@ -1,5 +1,6 @@
 from typing import Union
 from fastapi import FastAPI, Query
+from starlette.middleware.cors import CORSMiddleware
 
 from api_model.model import userLoginModel
 
@@ -8,6 +9,13 @@ import json
 import httpx
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # logger
 logger = logging.getLogger(__name__)
