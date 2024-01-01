@@ -1,8 +1,11 @@
 from typing import Union
 from fastapi import FastAPI, Query
+from database.conn import engineconn
+from database.base import Base
+from database.schema import User
+from config import Config
 from starlette.middleware.cors import CORSMiddleware
 
-from api_model.model import userLoginModel
 
 import logging
 import json
@@ -20,6 +23,15 @@ app.add_middleware(
 # logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+# db connection
+
+engine = engineconn()
+session = engine.sessionmaker()
+Base.metadata.create_all(bind=engine.engine)
+
+# get config
+config = Config()
 
 
 # kakao login
