@@ -27,12 +27,12 @@ def add_channel(channel):
         return None
 
 
-async def get_channel(creator_id):
-    print(creator_id, "@@@@", type(creator_id))
+async def get_channel(creator_id, channel_name):
     try:
         data = (
             session.query(Channel)
             .filter(Channel.channel_creator_id == creator_id)
+            .filter(Channel.channel_name == channel_name)
             .first()
         )
         return data
@@ -47,6 +47,7 @@ async def get_channel(creator_id):
 
 
 def add_check(check):
+    # TODO: 중복여부 확인 처리 추가해야함
     try:
         session.add(check)
         session.commit()
@@ -57,7 +58,6 @@ def add_check(check):
 def get_check(user_id, channel_id, created_at=None):
     try:
         if created_at:
-            print(created_at)
             data = (
                 session.query(Check)
                 .filter(Check.check_user_id == user_id)

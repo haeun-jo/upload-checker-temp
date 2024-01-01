@@ -99,7 +99,7 @@ async def post_channel_api(
     add_channel(channel)
 
     # get channel
-    channel_result = await get_channel(user.user_id)
+    channel_result = await get_channel(user.user_id, channel.channel_name)
     return channel_result
 
 
