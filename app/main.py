@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta
-from typing import Union
-from fastapi import FastAPI, Query
+from typing import Annotated, Union
+from fastapi import Body, Depends, FastAPI, Query
+from api_model.model import ChannelModel, CheckModel
+from database.query import add_channel, get_channel, add_check, get_check
+from util.auth import get_current_user
 from database.conn import engineconn
 from database.base import Base
-from database.schema import User
+from database.schema import User, Channel, Check
 from config import Config
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, HTTPBearer
@@ -69,3 +72,25 @@ def kakao_user_login(code: str = Query(..., description="카카오 인증코드"
     # create token
     token = encode_token(nickname)
     return {"access_token": token}
+
+@app.post("/channels", status_code=200)
+async def post_channel(
+    params: ChannelModel,
+    token: HTTPBearer = Depends(oauth2_scheme),
+):
+    input = params.dict()
+
+    # check user
+    user = await get_current_user(token)
+
+    # create channel
+    channel = Channel(
+        channel_name=input.get("name"),
+        channel_creator_id=user.user_id,
+        channel_check_type=input.get("check_type"),
+    )
+    add_channel(channel)
+
+    # get channel
+    channel_result = await get_channel(user.user_id)
+    return channel_result
