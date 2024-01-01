@@ -6,14 +6,14 @@ from database.base import Base
 from database.schema import User
 from config import Config
 from starlette.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, HTTPBearer
 from util.oauth import kakao_login, kakao_token
 from util.auth import create_access_token, encode_token
 
 
 import logging
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = HTTPBearer()
 
 app = FastAPI()
 app.add_middleware(
@@ -61,7 +61,7 @@ def kakao_user_login(code: str = Query(..., description="카카오 인증코드"
 
     # check user exist on DB
     if not session.query(User).filter(User.user_name == nickname).all():
-        print("User already exists")
+        print("User doesn't exists")
         # add user
         user = User(user_name=nickname)
         session.add(user)
