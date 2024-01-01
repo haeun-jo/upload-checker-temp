@@ -16,6 +16,20 @@ def get_user(username):
         return None
 
 
+def get_users():
+    try:
+        return session.query(User).all()
+    except:
+        return None
+
+
+def add_user(user):
+    try:
+        session.add(user)
+    except:
+        return None
+
+
 ################################################################
 # channel
 ################################################################
