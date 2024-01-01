@@ -58,6 +58,9 @@ async def home(request: Request):
 
 @app.get("/oauth/kakao/redirect", status_code=200)
 def kakao_user_login_api(code: str = Query(..., description="카카오 인증코드")):
+    """
+    카카오의 인증코드를 redirect 받아 인증절차를 거친 뒤, token을 return 합니다.
+    """
     kakao_access_token = kakao_token(code).get("access_token")
     kakao_user = kakao_login(kakao_access_token)
     nickname = kakao_user["properties"]["nickname"]
@@ -79,6 +82,9 @@ async def post_channel_api(
     params: ChannelModel,
     token: HTTPBearer = Depends(oauth2_scheme),
 ):
+    """
+    생성하고자 하는 채널의 정보를 받아 채널을 생성하고, 만들어진 채널의 정보를 return 합니다.
+    """
     input = params.dict()
 
     # check user
@@ -101,6 +107,9 @@ async def post_channel_api(
 async def post_check_api(
     params: CheckModel, token: HTTPBearer = Depends(oauth2_scheme)
 ):
+    """
+    출석하고자 하는 채널의 아이디를 받고 출석체크를 한 뒤, 출석 정보를 return 합니다.
+    """
     input = params.dict()
 
     # check user
@@ -124,6 +133,9 @@ async def post_check_api(
 async def get_check_api(
     channel_id: int = Query(default=0), token: HTTPBearer = Depends(oauth2_scheme)
 ):
+    """
+    채널 아이디를 확인하여, 현재 유저가 출석을 했는지 여부를 확인하여 출석 정보를 return 합니다.
+    """
     # check user
     user = await get_current_user(token)
 
