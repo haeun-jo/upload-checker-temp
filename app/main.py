@@ -2,7 +2,16 @@ from datetime import datetime, timedelta
 from typing import Annotated, Union
 from fastapi import Body, Depends, FastAPI, Query, Request
 from api_model.model import ChannelModel, CheckModel
+from database.query import (
+    add_channel,
+    get_channel,
+    add_check,
+    get_check,
     get_user_checks_channel,
+    add_user,
+    get_user,
+    get_users,
+)
 from util.auth import get_current_user
 from database.conn import engineconn
 from database.base import Base
@@ -147,6 +156,7 @@ async def get_check_api(
 
     return check_result
 
+
 @app.get("/channel/check", status_code=200)
 async def get_check_channel_api(
     channel_id: int = Query(default=0), token: HTTPBearer = Depends(oauth2_scheme)
@@ -172,3 +182,45 @@ async def get_check_channel_api(
     print("checks: %s" % checks)
 
     return list(map(lambda x: x.user_name, checks))
+
+
+@app.post("/dummy/user", status_code=200)
+async def dummy_user(user_name: str):
+    """
+    dummy 유저를 생성합니다.
+    """
+
+    # add dummy user
+    user = User(user_name=user_name)
+    add_user(user)
+
+    # get user
+    user_result = get_user(user_name)
+
+    return user_result
+
+
+@app.post("/dummy/check", status_code=200)
+async def dummy_check(
+    channel_id: int = Body(default=0), user_id: int = Body(default=0)
+):
+    """
+    dummy로 체크할 수 있는 api 입니다. 채널과 유저 아이디를 받아 체크합니다.
+    """
+
+    # dummy check
+    check = Check(
+        check_channel_id=channel_id,
+        check_user_id=user_id,
+    )
+    add_check(check)
+
+    # get check
+    check_result = get_check(user_id, channel_id)
+
+    return check_result
+
+
+@app.get("/user/list", status_code=200)
+async def user_list_api():
+    return get_users()
