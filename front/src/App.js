@@ -8,7 +8,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<SocialKakao />} />
-        <Route path="/redirect" element={<ChannelLobby />} />
+        <Route path="/main" element={<ChannelLobby />} />
         <Route path="/channel" element={<Channel />} />
       </Routes>
     </Router>
