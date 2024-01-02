@@ -38,7 +38,7 @@ function Channel() {
   return (
     <div>
       <h1>채널 페이지</h1>
-      <p>Channel: {JSON.stringify(channelInfo)}</p>
+      <p>Channel: {JSON.stringify(channelInfo.channel_name)}</p>
       <p>출석체크 여부 : {isChecked}</p>
 
       {/* 출석체크 버튼 */}
