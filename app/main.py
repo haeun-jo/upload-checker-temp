@@ -91,7 +91,7 @@ async def kakao_user_login_api(code: str = Query(..., description="카카오 인
 
     # create token
     token = encode_token(nickname)
-    CLIENT_REDIRECT_URL = "http://localhost:3000/redirect"
+    CLIENT_REDIRECT_URL = "http://localhost:3000/main"
     return RedirectResponse(url=f"{CLIENT_REDIRECT_URL}?access_token={token}")
 
 
