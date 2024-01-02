@@ -68,20 +68,26 @@ async def home(request: Request):
 
 
 @app.get("/oauth/kakao/redirect", status_code=200)
-def kakao_user_login_api(code: str = Query(..., description="카카오 인증코드")):
+async def kakao_user_login_api(code: str = Query(..., description="카카오 인증코드")):
     """
     카카오의 인증코드를 redirect 받아 인증절차를 거친 뒤, token을 return 합니다.
     """
     kakao_access_token = kakao_token(code).get("access_token")
     kakao_user = kakao_login(kakao_access_token)
     nickname = kakao_user["properties"]["nickname"]
-
-    # check user exist on DB
-    if not session.query(User).filter(User.user_name == nickname).all():
+    print(nickname)
+    # check user9 exist on DB
+    if len(session.query(User).filter(User.user_name == nickname).all()) == 0:
         print("User doesn't exists")
         # add user
         user = User(user_name=nickname)
-        session.add(user)
+        add_user(user)
+        print("User added", user.user_name)
+
+        # get user
+        user = get_user(nickname)
+        nickname = user.user_name
+        print(nickname)
 
     # create token
     token = encode_token(nickname)
