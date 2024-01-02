@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SocialKakao from "./page/socialKakao";
+import ChannelLobby from "./page/channelLobby";
 import Channel from "./page/channel";
 
 function App() {
@@ -7,7 +8,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<SocialKakao />} />
-        <Route path="/redirect" element={<Channel />} />
+        <Route path="/redirect" element={<ChannelLobby />} />
+        <Route path="/channel" element={<Channel />} />
       </Routes>
     </Router>
   );
