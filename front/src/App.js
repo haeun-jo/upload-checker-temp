@@ -1,0 +1,16 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import SocialKakao from "./page/socialKakao";
+import Channel from "./page/channel";
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<SocialKakao />} />
+        <Route path="/redirect" element={<Channel />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
