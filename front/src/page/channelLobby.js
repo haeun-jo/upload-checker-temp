@@ -7,6 +7,8 @@ function ChannelLobby() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("access_token");
+  const url =
+    "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app";
   Cookies.set("access_token", token);
 
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ function ChannelLobby() {
 
       // axios를 사용하여 POST 요청을 보냄
       const response = await axios.post(
-        "http://localhost:8000/channel",
+        `${url}/channel`,
         {
           name: "nnn", // 채널 이름 추가
           code: "222",
@@ -50,7 +52,7 @@ function ChannelLobby() {
       console.log(storedToken);
 
       // axios를 사용하여 POST 요청을 보냄
-      const response = await axios.get("http://localhost:8000/channel", {
+      const response = await axios.get(`${url}/channel`, {
         params: { channel_code: channelCode },
         headers: {
           Authorization: `Bearer ${storedToken}`,

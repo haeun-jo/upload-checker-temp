@@ -8,6 +8,8 @@ function Channel() {
   const { channelInfo } = location.state || {};
   const [isChecked, setIsChecked] = useState("");
   const [userList, setUserList] = useState([]);
+  const url =
+    "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app";
 
   const handleButtonClick = async () => {
     try {
@@ -42,7 +44,7 @@ function Channel() {
       const storedToken = Cookies.get("access_token");
 
       // 체크 리스트 요청을 보냄
-      const response = await axios.get("http://localhost:8000/channel/check", {
+      const response = await axios.get(`${url}/channel/check`, {
         params: { channel_id: channelInfo.channel_id },
         headers: {
           Authorization: `Bearer ${storedToken}`,
