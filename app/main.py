@@ -5,6 +5,7 @@ from api_model.model import ChannelModel, CheckModel
 from database.query import (
     add_channel,
     get_channel,
+    get_channel_with_name,
     add_check,
     get_check,
     get_user_checks_channel,
@@ -108,7 +109,9 @@ async def post_channel_api(
     add_channel(channel)
 
     # get channel
-    channel_result = await get_channel(user.user_id, channel.channel_name)
+    channel_result = await get_channel_with_name(
+        creator_id=user.user_id, 
+        channel_id=channel.channel_name)
     return channel_result
 
 

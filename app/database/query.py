@@ -41,7 +41,7 @@ def add_channel(channel):
         return None
 
 
-async def get_channel(creator_id, channel_name):
+async def get_channel_with_name(creator_id, channel_name):
     try:
         data = (
             session.query(Channel)
