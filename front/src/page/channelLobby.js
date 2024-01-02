@@ -7,6 +7,7 @@ function ChannelLobby() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("access_token");
+  Cookies.set("access_token", token);
 
   const navigate = useNavigate();
 
