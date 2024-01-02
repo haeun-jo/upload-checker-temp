@@ -12,6 +12,7 @@ from database.query import (
     add_user,
     get_user,
     get_users,
+    get_channel_with_code,
 )
 from util.auth import get_current_user
 from database.conn import engineconn
@@ -104,6 +105,7 @@ async def post_channel_api(
     # create channel
     channel = Channel(
         channel_name=input.get("name"),
+        channel_code=input.get("code"),
         channel_creator_id=user.user_id,
         channel_check_type=input.get("check_type"),
     )
@@ -187,6 +189,23 @@ async def get_check_channel_api(
     print("checks: %s" % checks)
 
     return list(map(lambda x: x.user_name, checks))
+
+
+@app.get("/channel")
+async def get_channel_api(
+    channel_code=Query(description="채널 코드", default=""),
+    token: HTTPBearer = Depends(oauth2_scheme),
+):
+    """
+    채널 코드를 통해 채널 정보를 받은 후, 들어갑니다.
+    """
+    # user check
+    user = await get_current_user(token)
+
+    # get channel with code
+    channel = await get_channel_with_code(channel_code)
+
+    return dict(channel=channel)
 
 
 @app.post("/dummy/user", status_code=200)

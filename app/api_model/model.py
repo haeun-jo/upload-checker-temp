@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 class ChannelModel(BaseModel):
     name: str = "name"
+    code: str = "code"
     check_type: str
 
 
