@@ -14,6 +14,7 @@ class Channel(Base):
 
     channel_id = Column(INTEGER, primary_key=True, nullable=False, autoincrement=True)
     channel_name = Column(String(30), nullable=False)
+    channel_code = Column(String(30), nullable=False, unique=True)
     channel_creator_id = Column(INTEGER, nullable=False)
     channel_user_count = Column(INTEGER, nullable=False, default=0)
     channel_check_type = Column(String(10), nullable=False)
