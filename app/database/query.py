@@ -12,21 +12,25 @@ session = engine.sessionmaker()
 def get_user(username):
     try:
         return session.query(User).filter(User.user_name == username).first()
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 
 def get_users():
     try:
         return session.query(User).all()
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 
 def add_user(user):
     try:
         session.add(user)
-    except:
+        session.commit()
+    except Exception as e:
+        print(e)
         return None
 
 
@@ -37,7 +41,8 @@ def add_channel(channel):
     try:
         session.add(channel)
         session.commit()
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 
@@ -51,7 +56,8 @@ async def get_channel_with_name(creator_id, channel_name):
         )
         return data
 
-    except:
+    except Exception as e:
+        print(e)
         None
 
 
@@ -60,7 +66,20 @@ async def get_channel(channel_id):
         data = session.query(Channel).filter(Channel.channel_id == channel_id).first()
         return data
 
-    except:
+    except Exception as e:
+        print(e)
+        None
+
+
+async def get_channel_with_code(channel_code):
+    try:
+        data = (
+            session.query(Channel).filter(Channel.channel_code == channel_code).first()
+        )
+        return data
+
+    except Exception as e:
+        print(e)
         None
 
 
@@ -74,7 +93,8 @@ def add_check(check):
     try:
         session.add(check)
         session.commit()
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 
@@ -96,7 +116,8 @@ def get_check(user_id, channel_id, created_at=None):
             .first()
         )
 
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 
@@ -119,5 +140,6 @@ def get_user_checks_channel(channel_id: int, created_at=None) -> User:
             .group_by(Check.check_user_id)
             .all()
         )
-    except:
+    except Exception as e:
+        print(e)
         return None
