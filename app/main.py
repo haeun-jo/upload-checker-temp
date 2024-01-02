@@ -22,7 +22,7 @@ from starlette.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, HTTPBearer
 from util.oauth import kakao_login, kakao_token
 from util.auth import create_access_token, encode_token
-from fastapi.responses import StreamingResponse, HTMLResponse
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
@@ -84,7 +84,8 @@ def kakao_user_login_api(code: str = Query(..., description="카카오 인증코
 
     # create token
     token = encode_token(nickname)
-    return {"access_token": token}
+    CLIENT_REDIRECT_URL = "http://localhost:3000/redirect"
+    return RedirectResponse(url=f"{CLIENT_REDIRECT_URL}?access_token={token}")
 
 
 @app.post("/channel", status_code=200)
@@ -110,8 +111,8 @@ async def post_channel_api(
 
     # get channel
     channel_result = await get_channel_with_name(
-        creator_id=user.user_id, 
-        channel_name=channel.channel_name)
+        creator_id=user.user_id, channel_name=channel.channel_name
+    )
     return channel_result
 
 
