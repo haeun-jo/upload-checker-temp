@@ -7,9 +7,11 @@ function ChannelLobby() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("access_token");
-  const url =
+  const cloudUrl =
     "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app";
-  if (token !== null){
+  const localUrl = "http://localhost:8000";
+  const url = cloudUrl;
+  if (token !== null) {
     Cookies.set("access_token", token);
   }
 

@@ -8,8 +8,10 @@ function Channel() {
   const { channelInfo } = location.state || {};
   const [isChecked, setIsChecked] = useState("");
   const [userList, setUserList] = useState([]);
-  const url =
+  const cloudUrl =
     "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app";
+  const localUrl = "http://localhost:8000";
+  const url = cloudUrl;
 
   const postCheck = async () => {
     try {
@@ -64,14 +66,18 @@ function Channel() {
     <div>
       <h1>채널 페이지</h1>
       <p>Channel: {JSON.stringify(channelInfo.channel_name)}</p>
-      <p>출석체크 여부 : {isChecked}</p>
-      <p>출석 유저 리스트 : {userList}</p>
-
       {/* 출석체크 버튼 */}
       <button onClick={postCheck}>출석체크</button>
 
       {/* 리스트 버튼 */}
       <button onClick={getCheckList}>체크현황</button>
+      <p>출석체크 여부 : {isChecked}</p>
+      <p>출석 유저 리스트 : {userList.length} 명</p>
+      <ul>
+        {userList.map((user, index) => (
+          <li key={index}>{user}</li>
+        ))}
+      </ul>
     </div>
   );
 }
