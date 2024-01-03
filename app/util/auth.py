@@ -19,7 +19,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 3000
 
 
 oauth2_scheme = HTTPBearer()
-
+engine = engineconn()
+session = engine.sessionmaker()
 app = FastAPI()
 
 class Token(BaseModel):
@@ -54,7 +55,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: Annotated[Session, Depends(db.session)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
