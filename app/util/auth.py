@@ -21,7 +21,7 @@ oauth2_scheme = HTTPBearer()
 
 app = FastAPI()
 
-session = db.session
+session = db.session()
 
 class Token(BaseModel):
     access_token: str
