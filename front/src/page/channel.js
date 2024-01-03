@@ -11,14 +11,14 @@ function Channel() {
   const url =
     "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app";
 
-  const handleButtonClick = async () => {
+  const postCheck = async () => {
     try {
       // 쿠키에서 토큰을 가져옴
       const storedToken = Cookies.get("access_token");
 
       // 출석체크 요청을 보냄
       const response = await axios.post(
-        "http://localhost:8000/check",
+        `http://${url}/check`,
         {
           channel_id: channelInfo.channel_id,
         },
@@ -68,7 +68,7 @@ function Channel() {
       <p>출석 유저 리스트 : {userList}</p>
 
       {/* 출석체크 버튼 */}
-      <button onClick={handleButtonClick}>출석체크</button>
+      <button onClick={postCheck}>출석체크</button>
 
       {/* 리스트 버튼 */}
       <button onClick={getCheckList}>체크현황</button>
