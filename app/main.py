@@ -117,7 +117,7 @@ async def post_channel_api(
         channel_creator_id=user.user_id,
         channel_check_type=input.get("check_type"),
     )
-    add_channel(channel)
+    add_channel(session, channel)
 
     # get channel
     channel_result = await get_channel_with_name(
@@ -145,7 +145,7 @@ async def post_check_api(
         check_user_id=user.user_id,
     )
 
-    add_check(check)
+    add_check(session, check)
 
     # get check
     check_result = get_check(session, user.user_id, input.get("channel_id"))
