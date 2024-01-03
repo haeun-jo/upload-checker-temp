@@ -73,7 +73,6 @@ async def kakao_user_login_api(code: str = Query(..., description="카카오 인
     카카오의 인증코드를 redirect 받아 인증절차를 거친 뒤, token을 return 합니다.
     """
     kakao_access_token = kakao_token(code).get("access_token")
-    print(kakao_access_token, '@@@@@')
     kakao_user = kakao_login(kakao_access_token)
     nickname = kakao_user["properties"]["nickname"]
     print(nickname)

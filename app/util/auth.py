@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Annotated
+from database.conn import engineconn, db
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import HTTPBearer
@@ -20,6 +21,7 @@ oauth2_scheme = HTTPBearer()
 
 app = FastAPI()
 
+session = engineconn.session
 
 class Token(BaseModel):
     access_token: str
@@ -53,7 +55,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
-async def get_current_user(session, token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
