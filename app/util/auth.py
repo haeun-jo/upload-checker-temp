@@ -9,6 +9,7 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 from logging import error
 from database.query import get_user
+from sqlalchemy.orm import Session
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -20,8 +21,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 3000
 oauth2_scheme = HTTPBearer()
 
 app = FastAPI()
-
-session = db.session()
 
 class Token(BaseModel):
     access_token: str
@@ -55,7 +54,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(db.session)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
