@@ -18,7 +18,7 @@ function Channel() {
 
       // 출석체크 요청을 보냄
       const response = await axios.post(
-        `http://${url}/check`,
+        `${url}/check`,
         {
           channel_id: channelInfo.channel_id,
         },
