@@ -91,8 +91,9 @@ async def kakao_user_login_api(code: str = Query(..., description="카카오 인
 
     # create token
     token = encode_token(nickname)
-    CLIENT_REDIRECT_URL = "http://localhost:3000/main"
-    return RedirectResponse(url=f"{CLIENT_REDIRECT_URL}?access_token={token}")
+    LOCAL_CLIENT_REDIRECT_URL = "http://localhost:3000/main"
+    CLOUD_CLIENT_REDIRECT_URL = "https://web-upload-checker-temp-28f9s2blqx7tnkg.sel5.cloudtype.app/main"
+    return RedirectResponse(url=f"{CLOUD_CLIENT_REDIRECT_URL}?access_token={token}")
 
 
 @app.post("/channel", status_code=200)
