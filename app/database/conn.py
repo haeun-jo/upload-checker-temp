@@ -1,3 +1,4 @@
+from typing import Callable, Generator
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 from config import Config
@@ -12,9 +13,9 @@ DB_URL = f"mysql+pymysql://{config.MYSQL_USER}:{config.MYSQL_PASSWORD}@{config.M
 class engineconn:
     def __init__(self):
         self.engine = create_engine(DB_URL)
-
+        
     def sessionmaker(self):
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         session = Session()
         return session
 
@@ -25,3 +26,16 @@ class engineconn:
     def init_db(self):
         Base.metadata.create_all(self.engine)
         print("init database completed")
+    
+    def get_db(self) -> Generator:
+        db = self.sessionmaker()
+        try:
+            yield db
+        finally:
+            db.close()
+    
+    @property
+    def session(self) -> Callable:
+        return self.get_db
+
+db = engineconn()

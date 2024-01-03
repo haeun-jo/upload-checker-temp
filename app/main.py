@@ -15,7 +15,7 @@ from database.query import (
     get_channel_with_code,
 )
 from util.auth import get_current_user
-from database.conn import engineconn
+from database.conn import engineconn, db
 from database.base import Base
 from database.schema import User, Channel, Check
 from config import Config
@@ -26,7 +26,7 @@ from util.auth import create_access_token, encode_token
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-
+from sqlalchemy.orm import Session
 import logging
 
 oauth2_scheme = HTTPBearer()
@@ -68,11 +68,12 @@ async def home(request: Request):
 
 
 @app.get("/oauth/kakao/redirect", status_code=200)
-async def kakao_user_login_api(code: str = Query(..., description="카카오 인증코드")):
+async def kakao_user_login_api(code: str = Query(..., description="카카오 인증코드"), session : Session = Depends(db.session)):
     """
     카카오의 인증코드를 redirect 받아 인증절차를 거친 뒤, token을 return 합니다.
     """
     kakao_access_token = kakao_token(code).get("access_token")
+    print(kakao_access_token, '@@@@@')
     kakao_user = kakao_login(kakao_access_token)
     nickname = kakao_user["properties"]["nickname"]
     print(nickname)
@@ -81,11 +82,11 @@ async def kakao_user_login_api(code: str = Query(..., description="카카오 인
         print("User doesn't exists")
         # add user
         user = User(user_name=nickname)
-        add_user(user)
+        add_user(session, user)
         print("User added", user.user_name)
 
         # get user
-        user = get_user(nickname)
+        user = get_user(session, nickname)
         nickname = user.user_name
         print(nickname)
 
@@ -93,13 +94,14 @@ async def kakao_user_login_api(code: str = Query(..., description="카카오 인
     token = encode_token(nickname)
     LOCAL_CLIENT_REDIRECT_URL = "http://localhost:3000/main"
     CLOUD_CLIENT_REDIRECT_URL = "https://web-upload-checker-temp-28f9s2blqx7tnkg.sel5.cloudtype.app/main"
-    return RedirectResponse(url=f"{CLOUD_CLIENT_REDIRECT_URL}?access_token={token}")
+    return RedirectResponse(url=f"{LOCAL_CLIENT_REDIRECT_URL}?access_token={token}")
 
 
 @app.post("/channel", status_code=200)
 async def post_channel_api(
     params: ChannelModel,
     token: HTTPBearer = Depends(oauth2_scheme),
+    session : Session = Depends(db.session)
 ):
     """
     생성하고자 하는 채널의 정보를 받아 채널을 생성하고, 만들어진 채널의 정보를 return 합니다.
@@ -120,6 +122,7 @@ async def post_channel_api(
 
     # get channel
     channel_result = await get_channel_with_name(
+        session,
         creator_id=user.user_id, channel_name=channel.channel_name
     )
     return channel_result
@@ -127,7 +130,7 @@ async def post_channel_api(
 
 @app.post("/check", status_code=200)
 async def post_check_api(
-    params: CheckModel, token: HTTPBearer = Depends(oauth2_scheme)
+    params: CheckModel, token: HTTPBearer = Depends(oauth2_scheme), session : Session = Depends(db.session)
 ):
     """
     출석하고자 하는 채널의 아이디를 받고 출석체크를 한 뒤, 출석 정보를 return 합니다.
@@ -146,14 +149,14 @@ async def post_check_api(
     add_check(check)
 
     # get check
-    check_result = get_check(user.user_id, input.get("channel_id"))
+    check_result = get_check(session, user.user_id, input.get("channel_id"))
 
     return check_result
 
 
 @app.get("/check", status_code=200)
 async def get_check_api(
-    channel_id: int = Query(default=0), token: HTTPBearer = Depends(oauth2_scheme)
+    channel_id: int = Query(default=0), token: HTTPBearer = Depends(oauth2_scheme), session : Session = Depends(db.session)
 ):
     """
     채널 아이디를 확인하여, 현재 유저가 출석을 했는지 여부를 확인하여 출석 정보를 return 합니다.
@@ -164,6 +167,7 @@ async def get_check_api(
     # get current_date check
     current_date_str = datetime.now().strftime("%Y-%m-%d")
     check_result = get_check(
+        session,
         channel_id=channel_id, user_id=user.user_id, created_at=current_date_str
     )
 
@@ -172,7 +176,8 @@ async def get_check_api(
 
 @app.get("/channel/check", status_code=200)
 async def get_check_channel_api(
-    channel_id: int = Query(default=0), token: HTTPBearer = Depends(oauth2_scheme)
+    channel_id: int = Query(default=0), token: HTTPBearer = Depends(oauth2_scheme),
+    session : Session = Depends(db.session)
 ):
     """
     채널의 생성자가 사용합니다. 채널 내의 오늘 기준 체크한 사람의 목록을 확인힐 수 있습니다.
@@ -183,7 +188,7 @@ async def get_check_channel_api(
     print("user: %s" % user.user_id)
 
     # check channel creator
-    channel = await get_channel(channel_id)
+    channel = await get_channel(session, channel_id)
     print("channel: %s" % channel.channel_creator_id, channel.channel_id)
     if channel is None:
         return None
@@ -192,7 +197,7 @@ async def get_check_channel_api(
 
     # get checks of channel
     current_date_str = datetime.now().strftime("%Y-%m-%d")
-    checks = get_user_checks_channel(channel_id, current_date_str)
+    checks = get_user_checks_channel(session, channel_id, current_date_str)
     print("checks: %s" % checks)
 
     return list(map(lambda x: x.user_name, checks))
@@ -202,6 +207,7 @@ async def get_check_channel_api(
 async def get_channel_api(
     channel_code=Query(description="채널 코드", default=""),
     token: HTTPBearer = Depends(oauth2_scheme),
+    session : Session = Depends(db.session)
 ):
     """
     채널 코드를 통해 채널 정보를 받은 후, 들어갑니다.
@@ -210,30 +216,31 @@ async def get_channel_api(
     user = await get_current_user(token)
 
     # get channel with code
-    channel = await get_channel_with_code(channel_code)
+    channel = await get_channel_with_code(session, channel_code)
 
     return dict(channel=channel)
 
 
 @app.post("/dummy/user", status_code=200)
-async def dummy_user(user_name: str):
+async def dummy_user(user_name: str, session : Session = Depends(db.session)):
     """
     dummy 유저를 생성합니다.
     """
 
     # add dummy user
     user = User(user_name=user_name)
-    add_user(user)
+    add_user(session, user)
 
     # get user
-    user_result = get_user(user_name)
+    user_result = get_user(session, user_name)
 
     return user_result
 
 
 @app.post("/dummy/check", status_code=200)
 async def dummy_check(
-    channel_id: int = Body(default=0), user_id: int = Body(default=0)
+    channel_id: int = Body(default=0), user_id: int = Body(default=0),
+    session : Session = Depends(db.session)
 ):
     """
     dummy로 체크할 수 있는 api 입니다. 채널과 유저 아이디를 받아 체크합니다.
@@ -248,11 +255,11 @@ async def dummy_check(
 
     # get check
     today = datetime.now().strftime("%Y-%m-%d")
-    check_result = get_check(user_id, channel_id, today)
+    check_result = get_check(session, user_id, channel_id, today)
 
     return check_result
 
 
 @app.get("/user/list", status_code=200)
-async def user_list_api():
-    return get_users()
+async def user_list_api(session : Session = Depends(db.session)):
+    return get_users(session)
