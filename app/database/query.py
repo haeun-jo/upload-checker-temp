@@ -29,6 +29,7 @@ def add_user(session, user):
         session.commit()
     except Exception as e:
         print(e)
+        session.rollback()
         return None
 
 
@@ -41,6 +42,7 @@ def add_channel(session, channel):
         session.commit()
     except Exception as e:
         print(e)
+        session.rollback()
         return None
 
 
@@ -93,6 +95,7 @@ def add_check(session, check):
         session.commit()
     except Exception as e:
         print(e)
+        session.rollback()
         return None
 
 
