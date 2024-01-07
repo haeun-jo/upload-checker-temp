@@ -10,7 +10,8 @@ function Channel() {
   const location = useLocation();
   const { channelInfo } = location.state || {};
   const [isChecked, setIsChecked] = useState("");
-  const [checkList, setCheckList] = useState([]);
+  const [totalCheckList, setTotalCheckList] = useState([]);
+  const [todayCheckList, setTodayCheckList] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState("");
   const cloudUrl =
@@ -54,6 +55,7 @@ function Channel() {
     try {
       // 쿠키에서 토큰을 가져옴
       const storedToken = Cookies.get("access_token");
+      setEndDate("");
 
       // 체크 리스트 요청을 보냄
       const response = await axios.get(`${url}/channel/check`, {
@@ -69,7 +71,8 @@ function Channel() {
 
       // 서버 응답을 처리하거나 상태를 업데이트할 수 있음
       console.log("서버 응답:", response.data);
-      setCheckList(response.data);
+      setTotalCheckList([]);
+      setTodayCheckList(response.data);
     } catch (error) {
       // 오류가 발생하면 여기서 처리
       console.error("오류 발생:", error);
@@ -105,7 +108,8 @@ function Channel() {
 
       // 서버 응답을 처리하거나 상태를 업데이트할 수 있음
       console.log("서버 응답:", response.data);
-      setCheckList(response.data);
+      setTodayCheckList([]);
+      setTotalCheckList(response.data);
     } catch (error) {
       // 오류가 발생하면 여기서 처리
       console.error("오류 발생:", error);
@@ -126,7 +130,6 @@ function Channel() {
       <button onClick={getTodayCheckList}>하루조회</button>
       <button onClick={getTotalCheckList}>기간조회</button>
       <p>출석체크 여부 : {isChecked}</p>
-      <p>출석조회 기간 : {checkList.length} 일</p>
 
       {/* 날짜 선택 UI */}
       <div>
@@ -140,37 +143,70 @@ function Channel() {
         <label>종료일:</label>
         <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} />
       </div>
-
-      <table className="tableWithBorder">
-        <thead>
-          <tr>
-            <th>날짜</th>
-            <th>출석 수</th>
-            <th>출석한 사용자</th>
-          </tr>
-        </thead>
-        <tbody>
-          {checkList.map((entry, index) => (
-            <tr key={index}>
-              <td>{entry.date}</td>
-              <td>{entry.checks.length}</td>
-              <td>
-                <ul style={{ listStyleType: "none", paddingInlineStart: "0" }}>
-                  {entry.checks.length > 0 ? (
-                    <li key={index}>
-                      {entry.checks.length > 1
-                        ? `${entry.checks[0]} 외 ${entry.checks.length - 1} 명`
-                        : entry.checks[0]}
-                    </li>
-                  ) : (
-                    <li key={index}>-</li>
-                  )}
-                </ul>
-              </td>
+      {totalCheckList.length > 0 && (
+        <table className="tableWithBorder">
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>출석 수</th>
+              <th>출석한 사용자</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {totalCheckList.map((entry, index) => (
+              <tr key={index}>
+                <td>{entry.date}</td>
+                <td>{entry.checks.length}</td>
+                <td>
+                  <ul
+                    style={{ listStyleType: "none", paddingInlineStart: "0" }}
+                  >
+                    {entry.checks.length > 0 ? (
+                      <li key={index}>
+                        {entry.checks.length > 1
+                          ? `${entry.checks[0]} 외 ${
+                              entry.checks.length - 1
+                            } 명`
+                          : entry.checks[0]}
+                      </li>
+                    ) : (
+                      <li key={index}>-</li>
+                    )}
+                  </ul>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {todayCheckList.length > 0 && (
+        <table className="tableWithBorder">
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>출석 수</th>
+              <th>출석한 사용자</th>
+            </tr>
+          </thead>
+          <tbody>
+            {todayCheckList.map((entry, index) => (
+              <tr key={index}>
+                <td>{entry.date}</td>
+                <td>{entry.checks.length}</td>
+                <td>
+                  <ul
+                    style={{ listStyleType: "none", paddingInlineStart: "0" }}
+                  >
+                    {entry.checks.map((user, userIndex) => (
+                      <li key={userIndex}>{user}</li>
+                    ))}
+                  </ul>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
