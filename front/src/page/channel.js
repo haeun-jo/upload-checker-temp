@@ -14,6 +14,7 @@ function Channel() {
   const [todayCheckList, setTodayCheckList] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState("");
+  const [summarySwitch, setSummarySwitch] = useState(true);
   const cloudUrl =
     "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app";
   const localUrl = "http://localhost:8000";
@@ -116,6 +117,10 @@ function Channel() {
     }
   };
 
+  const changeSummarySwitch = async () => {
+    setSummarySwitch(!summarySwitch);
+  };
+
   return (
     <div>
       <h1>채널 페이지</h1>
@@ -154,25 +159,35 @@ function Channel() {
           </thead>
           <tbody>
             {totalCheckList.map((entry, index) => (
-              <tr key={index}>
+              <tr key={index} onClick={changeSummarySwitch}>
                 <td>{entry.date}</td>
                 <td>{entry.checks.length}</td>
                 <td>
-                  <ul
-                    style={{ listStyleType: "none", paddingInlineStart: "0" }}
-                  >
-                    {entry.checks.length > 0 ? (
-                      <li key={index}>
-                        {entry.checks.length > 1
-                          ? `${entry.checks[0]} 외 ${
-                              entry.checks.length - 1
-                            } 명`
-                          : entry.checks[0]}
-                      </li>
-                    ) : (
-                      <li key={index}>-</li>
-                    )}
-                  </ul>
+                  {summarySwitch ? (
+                    <ul
+                      style={{ listStyleType: "none", paddingInlineStart: "0" }}
+                    >
+                      {entry.checks.length > 0 ? (
+                        <li key={index}>
+                          {entry.checks.length > 1
+                            ? `${entry.checks[0]} 외 ${
+                                entry.checks.length - 1
+                              } 명`
+                            : entry.checks[0]}
+                        </li>
+                      ) : (
+                        <li key={index}>-</li>
+                      )}
+                    </ul>
+                  ) : (
+                    <ul
+                      style={{ listStyleType: "none", paddingInlineStart: "0" }}
+                    >
+                      {entry.checks.map((user, userIndex) => (
+                        <li key={userIndex}>{user}</li>
+                      ))}
+                    </ul>
+                  )}
                 </td>
               </tr>
             ))}
