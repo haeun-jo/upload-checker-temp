@@ -41,8 +41,12 @@ function ChannelLobby() {
 
       // 서버 응답을 처리하거나 상태를 업데이트할 수 있음
       console.log("서버 응답:", JSON.stringify(response.data.channel));
+      if (response.data.channel === null) {
+        alert("채널이 존재하지 않습니다.");
+      } else {
       setChannelInfo(response.data.channel);
       navigate("/channel", { state: { channelInfo: response.data.channel } });
+      }
     } catch (error) {
       // 오류가 발생하면 여기서 처리
       console.error("오류 발생:", error);
