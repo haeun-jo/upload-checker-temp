@@ -196,11 +196,13 @@ async def get_check_api(
 @app.get("/channel/check", status_code=200)
 async def get_check_channel_api(
     channel_id: int = Query(default=0),
+    start_date=Query(default="", description="체크기준 시작날짜(KST)"),
+    end_date=Query(default="", description="체크기준 종료날짜(KST)"),
     token: HTTPBearer = Depends(oauth2_scheme),
     session: Session = Depends(db.session),
 ):
     """
-    채널의 생성자가 사용합니다. 채널 내의 오늘 기준 체크한 사람의 목록을 확인힐 수 있습니다.
+    채널의 생성자가 사용합니다. 채널 내, 일정 기간동안 체크한 사람의 목록을 확인힐 수 있습니다.
     """
 
     # check user
@@ -208,19 +210,35 @@ async def get_check_channel_api(
     print("user: %s" % user.user_id)
 
     # check channel creator
-    channel = await get_channel(session, channel_id)
-    print("channel: %s" % channel.channel_creator_id, channel.channel_id)
-    if channel is None:
-        return None
-    if channel.channel_creator_id != user.user_id:
-        return "채널의 생성자가 아닙니다"
+    # channel = await get_channel(session, channel_id)
+    # print("channel: %s" % channel.channel_creator_id, channel.channel_id)
+    # if channel is None:
+    #     return None
+    # if channel.channel_creator_id != user.user_id:
+    #     return "채널의 생성자가 아닙니다"
 
-    # get checks of channel
-    current_date_str = datetime.now().strftime("%Y-%m-%d")
-    checks = get_user_checks_channel(session, channel_id, current_date_str)
-    print("checks: %s" % checks)
+    # get period
 
-    return list(map(lambda x: x.user_name, checks))
+    end_date = start_date if end_date == "" else end_date
+    start_datetime = datetime.strptime(start_date, "%Y-%m-%d")
+    end_datetime = datetime.strptime(end_date, "%Y-%m-%d")
+    period_array = [
+        start_datetime + timedelta(days=x)
+        for x in range((end_datetime - start_datetime).days + 1)
+    ]
+
+    # get checks
+    channel_check_list = []
+    print(period_array)
+    for target_datetime in period_array:
+        current_date_str = target_datetime.strftime("%Y-%m-%d")
+        checks = get_user_checks_channel(session, channel_id, current_date_str)
+        datetime_checks = list(map(lambda x: x.user_name, checks))
+        check = {"date": current_date_str, "checks": datetime_checks}
+        channel_check_list.append(check)
+        print("checks: %s" % datetime_checks)
+
+    return channel_check_list
 
 
 @app.get("/channel")
