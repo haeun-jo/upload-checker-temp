@@ -1,8 +1,10 @@
 const SocialKakao = () => {
   const Rest_api_key = "635065823fa42e337885faea9b31f3f4"; //REST API KEY
-  const redirect_uri =
+  const cloud_redirect_uri =
     "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app/oauth/kakao/redirect"; //Redirect URI
   const local_Redirect_uri = "http://localhost:8000/oauth/kakao/redirect"; //Redirect URI
+  const base_url = process.env.REACT_APP_API_BASE_URL;
+  const redirect_uri = `${base_url}/oauth/kakao/redirect`;
 
   // oauth 요청 URL
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${Rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`;

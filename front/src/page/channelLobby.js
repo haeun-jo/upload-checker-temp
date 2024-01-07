@@ -10,7 +10,7 @@ function ChannelLobby() {
   const cloudUrl =
     "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app";
   const localUrl = "http://localhost:8000";
-  const url = cloudUrl;
+  const url = process.env.REACT_APP_API_BASE_URL;
   if (token !== null) {
     Cookies.set("access_token", token);
   }
