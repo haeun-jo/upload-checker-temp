@@ -108,7 +108,7 @@ async def kakao_user_login_api(
     CLOUD_CLIENT_REDIRECT_URL = (
         "https://web-upload-checker-temp-28f9s2blqx7tnkg.sel5.cloudtype.app/main"
     )
-    return RedirectResponse(url=f"{LOCAL_CLIENT_REDIRECT_URL}?access_token={token}")
+    return RedirectResponse(url=f"{CLOUD_CLIENT_REDIRECT_URL}?access_token={token}")
 
 
 @app.post("/channel", status_code=200)
