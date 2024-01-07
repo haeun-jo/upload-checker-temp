@@ -67,6 +67,16 @@ async def home(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
+@app.get("/user")
+async def user_api(
+    token: HTTPBearer = Depends(oauth2_scheme),
+    session: Session = Depends(db.session),
+):
+    # get user info
+    user = await get_current_user(token)
+    return user
+
+
 @app.get("/oauth/kakao/redirect", status_code=200)
 async def kakao_user_login_api(
     code: str = Query(..., description="카카오 인증코드"),
