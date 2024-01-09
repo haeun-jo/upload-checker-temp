@@ -13,7 +13,7 @@ function Channel() {
   const [totalCheckList, setTotalCheckList] = useState([]);
   const [todayCheckList, setTodayCheckList] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState("");
+  const [endDate, setEndDate] = useState(new Date());
   const [summarySwitch, setSummarySwitch] = useState(true);
   const cloudUrl =
     "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app";
