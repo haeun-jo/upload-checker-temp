@@ -122,7 +122,7 @@ def get_check(session, user_id, channel_id, created_at=None):
         return None
 
 
-def get_user_checks_channel(session, channel_id: int, created_at=None) -> User:
+def get_channel_checks(session, channel_id: int, created_at=None) -> User:
     try:
         if created_at is not None:
             data = (

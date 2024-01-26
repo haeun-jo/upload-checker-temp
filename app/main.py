@@ -232,7 +232,7 @@ async def get_check_channel_api(
     print(period_array)
     for target_datetime in period_array:
         current_date_str = target_datetime.strftime("%Y-%m-%d")
-        checks = get_user_checks_channel(session, channel_id, current_date_str)
+        checks = get_channel_checks(session, channel_id, current_date_str)
         datetime_checks = list(map(lambda x: x.user_name, checks))
         check = {"date": current_date_str, "checks": datetime_checks}
         channel_check_list.append(check)
