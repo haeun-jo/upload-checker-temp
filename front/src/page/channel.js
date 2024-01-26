@@ -12,6 +12,7 @@ function Channel() {
   const [isChecked, setIsChecked] = useState("");
   const [totalCheckList, setTotalCheckList] = useState([]);
   const [todayCheckList, setTodayCheckList] = useState([]);
+  const [myCheckList, setMyCheckList] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [summarySwitch, setSummarySwitch] = useState(true);
@@ -73,6 +74,7 @@ function Channel() {
       // 서버 응답을 처리하거나 상태를 업데이트할 수 있음
       console.log("서버 응답:", response.data);
       setTotalCheckList([]);
+      setMyCheckList([]);
       setTodayCheckList(response.data);
     } catch (error) {
       // 오류가 발생하면 여기서 처리
@@ -110,7 +112,45 @@ function Channel() {
       // 서버 응답을 처리하거나 상태를 업데이트할 수 있음
       console.log("서버 응답:", response.data);
       setTodayCheckList([]);
+      setMyCheckList([]);
       setTotalCheckList(response.data);
+    } catch (error) {
+      // 오류가 발생하면 여기서 처리
+      console.error("오류 발생:", error);
+    }
+  };
+
+  const getMyCheckList = async () => {
+    try {
+      const storedToken = Cookies.get("access_token");
+      // 체크 리스트 요청을 보냄
+
+      if (!(startDate && endDate)) {
+        alert("나의 출석체크 조회를 위해 시작일과 종료일을 지정해주세요.");
+        return false;
+      }
+
+      if (startDate > endDate) {
+        alert("시작일이 종료일보다 뒤에 있습니다.");
+        return false;
+      }
+
+      const response = await axios.get(`${url}/user/check`, {
+        params: {
+          channel_id: channelInfo.channel_id,
+          start_date: startDate.toISOString().split("T")[0],
+          end_date: endDate !== "" ? endDate.toISOString().split("T")[0] : "",
+        },
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
+        },
+      });
+
+      // 서버 응답을 처리하거나 상태를 업데이트할 수 있음
+      console.log("서버 응답:", response.data);
+      setTodayCheckList([]);
+      setTotalCheckList([]);
+      setMyCheckList(response.data);
     } catch (error) {
       // 오류가 발생하면 여기서 처리
       console.error("오류 발생:", error);
@@ -134,6 +174,7 @@ function Channel() {
       {/* 리스트 버튼 */}
       <button onClick={getTodayCheckList}>하루조회</button>
       <button onClick={getTotalCheckList}>기간조회</button>
+      <button onClick={getMyCheckList}>나의 출석조회</button>
       <p>출석체크 여부 : {isChecked}</p>
 
       {/* 날짜 선택 UI */}
@@ -217,6 +258,24 @@ function Channel() {
                     ))}
                   </ul>
                 </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {myCheckList.length > 0 && (
+        <table className="tableWithBorder">
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>나의 출석 여부</th>
+            </tr>
+          </thead>
+          <tbody>
+            {myCheckList.map((entry, index) => (
+              <tr key={index}>
+                <td>{entry.date}</td>
+                <td>{entry.check}</td>
               </tr>
             ))}
           </tbody>
