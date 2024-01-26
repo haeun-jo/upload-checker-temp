@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from database.conn import engineconn, db
 from database.schema import User, Channel, Check
 from sqlalchemy import cast, Date
@@ -89,10 +90,18 @@ async def get_channel_with_code(session, channel_code):
 
 
 def add_check(session, check):
-    # TODO: 중복여부 확인 처리 추가해야함
     try:
-        session.add(check)
-        session.commit()
+        current_datetime_str = datetime.now().strftime("%Y-%m-%d")
+        check = (
+            session.query(Check)
+            .filter(Check.check_channel_id == check.check_channel_id)
+            .filter(Check.check_user_id == check.check_user_id)
+            .filter(cast(Check.created_at, Date) == current_datetime_str)
+        )
+        # 중복이 아닌 경우에만 출석체크
+        if not check:
+            session.add(check)
+            session.commit()
     except Exception as e:
         print(e)
         session.rollback()
