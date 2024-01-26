@@ -144,3 +144,23 @@ def get_channel_checks(session, channel_id: int, created_at=None) -> User:
     except Exception as e:
         print(e)
         return None
+
+
+def get_user_checks_channel(
+    session, channel_id, user_id, start_date_str, end_date_str
+) -> Check:
+    try:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d") + timedelta(days=1)
+
+        data = (
+            session.query(Check)
+            .filter(Check.check_channel_id == channel_id)
+            .filter(Check.check_user_id == user_id)
+            .filter(Check.created_at.between(start_date, end_date))
+            .all()
+        )
+        return data
+    except Exception as e:
+        print(e)
+        return None

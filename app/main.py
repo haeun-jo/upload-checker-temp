@@ -302,3 +302,43 @@ async def dummy_check(
 @app.get("/user/list", status_code=200)
 async def user_list_api(session: Session = Depends(db.session)):
     return get_users(session)
+
+@app.get("/user/check", status_code=200)
+async def user_check(
+    session: Session = Depends(db.session),
+    token: HTTPBearer = Depends(oauth2_scheme),
+    channel_id: int = Query(default=0),
+    start_date=Query(default="", description="체크기준 시작날짜(KST)"),
+    end_date=Query(default="", description="체크기준 종료날짜(KST)"),
+):
+    result = []
+
+    # user check
+    user = await get_current_user(token)
+
+    print(channel_id, start_date, end_date, user)
+
+    # get user check list
+    user_check_list = get_user_checks_channel(
+        session, channel_id, user.user_id, start_date, end_date
+    )
+    checked_date_list = []
+    for check in user_check_list:
+        checked_date_list.append(check.created_at.strftime("%Y-%m-%d"))
+
+    # get period
+    start_datetime = datetime.strptime(start_date, "%Y-%m-%d")
+    end_datetime = datetime.strptime(end_date, "%Y-%m-%d")
+    period_array = [
+        start_datetime + timedelta(days=x)
+        for x in range((end_datetime - start_datetime).days + 1)
+    ]
+
+    for target_date in period_array:
+        check = {"date": "", "check": "X"}
+        if target_date.strftime("%Y-%m-%d") in checked_date_list:
+            check["check"] = "O"
+        check["date"] = target_date.strftime("%Y-%m-%d")
+        result.append(check)
+
+    return result
