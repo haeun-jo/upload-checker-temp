@@ -13,6 +13,7 @@ from database.query import (
     get_user,
     get_users,
     get_channel_with_code,
+    get_channel_checks
 )
 from util.auth import get_current_user
 from database.conn import engineconn, db
