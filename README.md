@@ -2,7 +2,7 @@
 ```
 # front
 $ cd front
-$ npm run serve
+$ npm start
 
 # backend 
 $ docker-compose up
