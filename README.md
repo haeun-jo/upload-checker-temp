@@ -1,8 +1,9 @@
 ## GET STARTED
 ```
 # front
-npm run serve
+$ cd front
+$ npm run serve
 
 # backend 
-docker-compose up
+$ docker-compose up
 ```
