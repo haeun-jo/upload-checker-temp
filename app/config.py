@@ -1,9 +1,7 @@
-from starlette.config import Config
+from starlette.config import Config as StarletteConfig
 from dotenv import load_dotenv
 
 load_dotenv()
-
-config = Config(".env")
 
 
 class Config:
@@ -13,9 +11,18 @@ class Config:
     MYSQL_PASSWORD = 123456
     MYSQL_PORT = 3306
     MYSQL_HOST = "mysql"
+    # KAKAO_REDIRECT_URI = "http://localhost:8000/oauth/kakao/redirect"
+    # CLIENT_REDIRECT_URL = "http://localhost:3000/main"
+    KAKAO_REDIRECT_URI = "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app/oauth/kakao/redirect"
+    CLIENT_REDIRECT_URL = (
+        "https://web-upload-checker-temp-28f9s2blqx7tnkg.sel5.cloudtype.app/main"
+    )
 
     def __init__(self):
-        self.config = config
+        self.config = StarletteConfig(".env")
 
     def __call__(self):
         return self.config
+
+
+config = Config()
