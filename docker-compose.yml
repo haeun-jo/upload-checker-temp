@@ -4,6 +4,9 @@ services:
   upload-checker-server:
     image: upload-checker:latest
     container_name: upload-checker
+    build: 
+      context: .
+      dockerfile: ./checker.Dockerfile
     volumes:
       - ./app:/app
     ports:
