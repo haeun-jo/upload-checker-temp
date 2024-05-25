@@ -4,7 +4,6 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "../css/channel.css";
 
 function Channel() {
   const location = useLocation();

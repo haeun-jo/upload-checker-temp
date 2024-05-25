@@ -1,36 +1,25 @@
-import React, { useState } from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
+import  { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import instance from "../api/axiosConfig";
 
 function CreateChannel() {
   const [channelName, setChannelName] = useState("");
   const [channelCode, setChannelCode] = useState("");
-  const Cloudurl =
-    "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app";
-  const Localurl = "http://localhost:8000";
-  const url = process.env.REACT_APP_API_BASE_URL;
+
   const navigate = useNavigate();
 
   const postChannel = async () => {
     try {
-      // 쿠키에서 토큰을 가져옴
-      const storedToken = Cookies.get("access_token");
-      console.log(storedToken);
 
       // 출석체크 요청을 보냄
-      const response = await axios.post(
-        `${url}/channel`,
+      const response = await instance.post(
+        `/channel`,
         {
           name: channelName,
           code: channelCode,
           check_type: "check",
         },
-        {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
-        }
+       
       );
 
       // 서버 응답을 처리하거나 상태를 업데이트할 수 있음
