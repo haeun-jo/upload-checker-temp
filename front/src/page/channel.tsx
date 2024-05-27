@@ -1,72 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
-import Cookies from "js-cookie";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import instance from "../api/axiosConfig";
 
-function Channel() {
+export default function ChannelRoom() {
   const location = useLocation();
   const { channelInfo } = location.state || {};
   const [isChecked, setIsChecked] = useState("");
   const [totalCheckList, setTotalCheckList] = useState([]);
   const [todayCheckList, setTodayCheckList] = useState([]);
   const [myCheckList, setMyCheckList] = useState([]);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [summarySwitch, setSummarySwitch] = useState(true);
-  const cloudUrl =
-    "https://port-0-upload-checker-wr4oe2alqv1116q.sel5.cloudtype.app";
-  const localUrl = "http://localhost:8000";
-  const url = process.env.REACT_APP_API_BASE_URL;
+
   const navigate = useNavigate();
 
   const postCheck = async () => {
     try {
-      // 쿠키에서 토큰을 가져옴
-      const storedToken = Cookies.get("access_token");
-
       // 출석체크 요청을 보냄
-      const response = await axios.post(
-        `${url}/check`,
-        {
+      await instance.post( "/check", {
           channel_id: channelInfo.channel_id,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
-        }
-      );
-
-      // 서버 응답을 처리하거나 상태를 업데이트할 수 있음
-      console.log("서버 응답:", response.data);
+      ).then(res => {
+      console.log("서버 응답:", res);
       setIsChecked("O");
+      })
     } catch (error) {
-      // 오류가 발생하면 여기서 처리
       console.error("오류 발생:", error);
     }
   };
 
-  const moveLobby = async () => {
-    navigate("/main");
-  };
-
   const getTodayCheckList = async () => {
     try {
-      // 쿠키에서 토큰을 가져옴
-      const storedToken = Cookies.get("access_token");
-      setEndDate("");
+      setEndDate(null);
 
       // 체크 리스트 요청을 보냄
-      const response = await axios.get(`${url}/channel/check`, {
+      const response = await instance.get(`/channel/check`, {
         params: {
           channel_id: channelInfo.channel_id,
-          start_date: startDate.toISOString().split("T")[0],
+          start_date: startDate && startDate.toISOString().split("T")[0],
           end_date: "",
-        },
-        headers: {
-          Authorization: `Bearer ${storedToken}`,
         },
       });
 
@@ -76,16 +51,12 @@ function Channel() {
       setMyCheckList([]);
       setTodayCheckList(response.data);
     } catch (error) {
-      // 오류가 발생하면 여기서 처리
       console.error("오류 발생:", error);
     }
   };
 
   const getTotalCheckList = async () => {
     try {
-      // 쿠키에서 토큰을 가져옴
-      const storedToken = Cookies.get("access_token");
-
       if (!(startDate && endDate)) {
         alert("기간 조회를 위해 시작일과 종료일을 지정해주세요.");
         return false;
@@ -97,31 +68,24 @@ function Channel() {
       }
 
       // 체크 리스트 요청을 보냄
-      const response = await axios.get(`${url}/channel/check`, {
+      const response = await instance.get("/channel/check", {
         params: {
           channel_id: channelInfo.channel_id,
           start_date: startDate.toISOString().split("T")[0],
-          end_date: endDate !== "" ? endDate.toISOString().split("T")[0] : "",
-        },
-        headers: {
-          Authorization: `Bearer ${storedToken}`,
+          end_date: endDate !== null ? endDate.toISOString().split("T")[0] : "",
         },
       });
-
-      // 서버 응답을 처리하거나 상태를 업데이트할 수 있음
       console.log("서버 응답:", response.data);
       setTodayCheckList([]);
       setMyCheckList([]);
       setTotalCheckList(response.data);
     } catch (error) {
-      // 오류가 발생하면 여기서 처리
       console.error("오류 발생:", error);
     }
   };
 
   const getMyCheckList = async () => {
     try {
-      const storedToken = Cookies.get("access_token");
       // 체크 리스트 요청을 보냄
 
       if (!(startDate && endDate)) {
@@ -134,39 +98,30 @@ function Channel() {
         return false;
       }
 
-      const response = await axios.get(`${url}/user/check`, {
+      const response = await instance.get("/user/check", {
         params: {
           channel_id: channelInfo.channel_id,
           start_date: startDate.toISOString().split("T")[0],
-          end_date: endDate !== "" ? endDate.toISOString().split("T")[0] : "",
-        },
-        headers: {
-          Authorization: `Bearer ${storedToken}`,
+          end_date: endDate !== null ? endDate.toISOString().split("T")[0] : "",
         },
       });
 
-      // 서버 응답을 처리하거나 상태를 업데이트할 수 있음
       console.log("서버 응답:", response.data);
       setTodayCheckList([]);
       setTotalCheckList([]);
       setMyCheckList(response.data);
     } catch (error) {
-      // 오류가 발생하면 여기서 처리
       console.error("오류 발생:", error);
     }
   };
 
-  const changeSummarySwitch = async () => {
-    setSummarySwitch(!summarySwitch);
-  };
-
   return (
-    <div>
+    <div className="wrapper">
       <h1>채널 페이지</h1>
       <p>Channel: {JSON.stringify(channelInfo.channel_name)}</p>
 
       {/* 출석체크 버튼 */}
-      <button onClick={moveLobby}>로비로</button>
+      <button onClick={() => navigate("/main")}>로비로</button>
       {/* 출석체크 버튼 */}
       <button onClick={postCheck}>출석체크</button>
 
@@ -180,6 +135,10 @@ function Channel() {
       <div>
         <label>시작일:</label>
         <DatePicker
+          dateFormat='yyyy.MM.dd' // 날짜 형태
+          shouldCloseOnSelect // 날짜를 선택하면 datepicker가 자동으로 닫힘
+          minDate={new Date('2000-01-01')} // minDate 이전 날짜 선택 불가
+          maxDate={new Date()} // maxDate 이후 날짜 선택 불가
           selected={startDate}
           onChange={(date) => setStartDate(date)}
         />
@@ -198,8 +157,8 @@ function Channel() {
             </tr>
           </thead>
           <tbody>
-            {totalCheckList.map((entry, index) => (
-              <tr key={index} onClick={changeSummarySwitch}>
+            {/* {totalCheckList.map((entry, index) => (
+              <tr key={index} onClick={() => setSummarySwitch(!summarySwitch)}>
                 <td>{entry.date}</td>
                 <td>{entry.checks.length}</td>
                 <td>
@@ -230,7 +189,7 @@ function Channel() {
                   )}
                 </td>
               </tr>
-            ))}
+            ))} */}
           </tbody>
         </table>
       )}
@@ -244,7 +203,7 @@ function Channel() {
             </tr>
           </thead>
           <tbody>
-            {todayCheckList.map((entry, index) => (
+            {/* {todayCheckList.map((entry, index) => (
               <tr key={index}>
                 <td>{entry.date}</td>
                 <td>{entry.checks.length}</td>
@@ -258,7 +217,7 @@ function Channel() {
                   </ul>
                 </td>
               </tr>
-            ))}
+            ))} */}
           </tbody>
         </table>
       )}
@@ -271,12 +230,12 @@ function Channel() {
             </tr>
           </thead>
           <tbody>
-            {myCheckList.map((entry, index) => (
+            {/* {myCheckList.map((entry, index) => (
               <tr key={index}>
                 <td>{entry.date}</td>
                 <td>{entry.check}</td>
               </tr>
-            ))}
+            ))} */}
           </tbody>
         </table>
       )}
@@ -284,4 +243,3 @@ function Channel() {
   );
 }
 
-export default Channel;

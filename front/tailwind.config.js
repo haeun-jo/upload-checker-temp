@@ -15,8 +15,18 @@ module.exports = {
           2: "#ADBC9F",
           3: "#FBFADA",
         },
-
-        // error: "oklch(54% 0.22 29)",
+        secondary: {
+          DEFAULT: "#F3CA52",
+          1: "#F6E9B2",
+          // 2: "#ADBC9F",
+          // 3: "#FBFADA",
+        },
+        button: {
+          DEFAULT: "#ED9455",
+          1: "#FFBB70",
+          2: "#FFEC9E",
+          3: "#FFFBDA",
+        },
       },
       spacing: {
         sm: "4px",

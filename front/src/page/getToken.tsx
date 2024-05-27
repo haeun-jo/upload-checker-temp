@@ -4,9 +4,9 @@ import { useEffect } from "react";
 import SpinnerIcon from '../assets/images/icon/spinner.gif'
 
 export default function GetToken () {
-  const navigate = useNavigate()
-  const [searchParams] = useSearchParams();
-  const {setToken} = useAuthStore()
+  const navigate = useNavigate();
+  const [ searchParams ] = useSearchParams();
+  const { setToken } = useAuthStore();
   
   useEffect(() => {
     const accessToken = searchParams.get('access_token');

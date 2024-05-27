@@ -8,8 +8,8 @@ export default function SocialKakao() {
   const kakaoUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
   return (
-    <div className="wrapper">
-      <p className="mb-9 text-5xl text-center">
+    <div className="wrapper items-center justify-center">
+      <p className="mb-9 text-5xl">
         in love with
         <br /> each other
       </p>
