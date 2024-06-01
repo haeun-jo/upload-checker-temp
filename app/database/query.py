@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from database.conn import engineconn, db
-from database.schema import User, Channel, Check
+from database.schema import User, Channel, Check, UserChannel
 from sqlalchemy import cast, Date
 from sqlalchemy.orm import Session
 
@@ -31,6 +31,29 @@ def add_user(session, user):
     except Exception as e:
         print(e)
         session.rollback()
+        return None
+
+
+################################################################
+# user-channel
+################################################################
+
+
+def add_user_channel(session, user_channel):
+    try:
+        session.add(user_channel)
+        session.commit()
+    except Exception as e:
+        print(e)
+        session.rollback()
+        return None
+
+
+def get_user_channels(session: Session, user_id):
+    try:
+        return session.query(UserChannel).filter(UserChannel.user_id == user_id).all()
+    except Exception as e:
+        print(e)
         return None
 
 

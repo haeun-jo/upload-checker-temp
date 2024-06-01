@@ -22,6 +22,18 @@ class Channel(Base):
     created_at = Column(DateTime, default=func.current_timestamp())
 
 
+class UserChannel(Base):
+    __tablename__ = "user_channel"
+
+    user_channel_id = Column(
+        INTEGER, primary_key=True, nullable=False, autoincrement=True
+    )
+    channel_id = Column(INTEGER, nullable=False)
+    user_id = Column(INTEGER, nullable=False)
+    updated_at = Column(DateTime, default=func.current_timestamp())
+    created_at = Column(DateTime, default=func.current_timestamp())
+
+
 class Check(Base):
     __tablename__ = "check"
 
