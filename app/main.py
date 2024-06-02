@@ -4,10 +4,12 @@ from fastapi import Body, Depends, FastAPI, Query, Request
 from api_model.model import ChannelModel, CheckModel
 from database.query import (
     add_channel,
+    add_user_channel,
     get_channel,
     get_channel_with_name,
     add_check,
     get_check,
+    get_user_channels,
     get_user_checks_channel,
     add_user,
     get_user,
@@ -18,7 +20,7 @@ from database.query import (
 from util.auth import get_current_user
 from database.conn import engineconn, db
 from database.base import Base
-from database.schema import User, Channel, Check
+from database.schema import User, Channel, Check, UserChannel
 from config import Config
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, HTTPBearer
@@ -254,6 +256,10 @@ async def get_channel_api(
 
     # get channel with code
     channel = await get_channel_with_code(session, channel_code)
+    user_channel = UserChannel(user_id=user.user_id, channel_id=channel.channel_id)
+
+    # join channel
+    add_user_channel(session, user_channel)
 
     return dict(channel=channel)
 
@@ -342,3 +348,19 @@ async def user_check(
         result.append(check)
 
     return result
+
+
+@app.get("/user/channel", status_code=200)
+async def get_user_channel(
+    session: Session = Depends(db.session), token: HTTPBearer = Depends(oauth2_scheme)
+):
+    """
+    유저가 가입한 채널 목록을 return 합니다
+    """
+    # user check
+    user = await get_current_user(token)
+
+    # get user's channels
+    user_channels = get_user_channels(session, user.user_id)
+
+    return user_channels
