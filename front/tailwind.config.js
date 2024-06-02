@@ -1,19 +1,24 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
+  // content: [
+  //   "./src/**/*.{js,jsx,ts,tsx}",
+  //   // "./pages/**/*.{html,js}",
+  //   // "./components/**/*.{html,js}",
+  // ],
+  content: [ 
     "./src/**/*.{js,jsx,ts,tsx}",
-    // "./pages/**/*.{html,js}",
-    // "./components/**/*.{html,js}",
+    "./node_modules/react-tailwindcss-datepicker/dist/index.esm.js",
   ],
-
   theme: {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#12372A",
-          1: "#436850",
-          2: "#ADBC9F",
-          3: "#FBFADA",
+          DEFAULT: "#e9f5db",
+          1:"#cfe1b9",
+          2: "#b5c99a",
+          3: "#97a97c",
+          4: "#87986a",
+          5: "#718355",
         },
         secondary: {
           DEFAULT: "#F3CA52",
@@ -27,6 +32,9 @@ module.exports = {
           2: "#FFEC9E",
           3: "#FFFBDA",
         },
+        text:{
+          DEFAULT: "#415a77",
+        }
       },
       spacing: {
         sm: "4px",
