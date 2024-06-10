@@ -33,7 +33,7 @@ module.exports = {
           3: "#FFFBDA",
         },
         text:{
-          DEFAULT: "#415a77",
+          DEFAULT: "#27374D",
         }
       },
       spacing: {

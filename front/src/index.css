@@ -6,7 +6,7 @@
   html,
   body,
   #root {
-    @apply w-full h-full min-w-[320px] bg-primary text-primary-5 font-semibold;
+    @apply w-full h-full min-w-[320px] bg-gradient-to-b from-[#fff] to-[#e9b7ce] text-text font-semibold;
   }
 }
 
@@ -15,11 +15,11 @@
 }
 
 .button {
-  @apply bg-button-3 text-primary-5 rounded-md px-4 py-1 font-bold hover:bg-button-2 disabled:bg-[#dee2e6] disabled:text-primary-3 disabled:cursor-not-allowed;
+  @apply bg-[#769FCD] text-[#F7FBFC] rounded-md px-4 py-1 font-bold hover:bg-[#B9D7EA] disabled:bg-[#dee2e6]  disabled:cursor-not-allowed;
 }
 
 .input {
-  @apply py-1 px-2 text-primary-5 font-normal rounded-md focus:outline-none focus:border-button focus:ring-2 focus:ring-button;
+  @apply py-1 px-2 text-text font-normal rounded-md focus:outline-none focus:border-button focus:ring-2 focus:ring-button;
 }
 
 .tab {
@@ -27,5 +27,5 @@
 }
 
 .title {
-  @apply text-2xl text-center font-bold text-[#64a6bd]
+  @apply text-2xl text-center font-bold text-button;
 }

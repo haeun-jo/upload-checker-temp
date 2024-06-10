@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import instance from "../api/axiosConfig";
-import { useChannelInfoStore } from "../store/channel";
-import { getMyCheckList, getCheckPeriodList } from "../types/channel";
+import instance from "../../api/axiosConfig";
+import { useChannelInfoStore } from "../../store/channel";
+import { getMyCheckList, getCheckPeriodList } from "../../types/channel";
 import CalendarIcon from '../assets/images/icon/ico-calendar.svg';
-import HomeIcon from '../assets/images/icon/ico-home.svg';
+import HomeIcon from  '../../assets/images/icon/ico-home.svg'
 import classNames from "classnames";
 
 export default function ChannelRoom() {
@@ -130,7 +130,7 @@ export default function ChannelRoom() {
 
   return (
     <div className="wrapper gap-5">
-      <button className="w-8" type="button" onClick={() => navigate("/main")}>
+      <button className="w-8" type="button" onClick={() => navigate("/lobby")}>
         <img src={HomeIcon} alt="홈으로 가기" />
       </button>
 

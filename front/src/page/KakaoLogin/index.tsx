@@ -1,4 +1,4 @@
-export default function SocialKakao() {
+export default function KakaoLogin() {
   const KAKAO_REST_API_KEY = process.env.REACT_APP_KAKAO_REST_API_KEY;
   const REDIRECT_URI = `${process.env.REACT_APP_API_BASE_URL}/oauth/kakao/redirect`;
 

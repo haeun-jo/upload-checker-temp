@@ -1,8 +1,8 @@
 import  { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import instance from "../api/axiosConfig";
-import { useChannelInfoStore } from "../store/channel";
-import HomeIcon from '../assets/images/icon/ico-home.svg';
+import instance from "../../api/axiosConfig";
+import { useChannelInfoStore } from "../../store/channel";
+import HomeIcon from  '../../assets/images/icon/ico-home.svg'
 
 function CreateChannel() {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ function CreateChannel() {
 
   return (
     <div className="wrapper items-center justify-center text-center">
-      <button className="w-8" type="button" onClick={()=>navigate("/main")}>
+      <button className="w-8" type="button" onClick={()=>navigate("/lobby")}>
         <img src={HomeIcon} alt="홈으로 가기" />
       </button>
       <label className="block mt-6">채널의 이름을 입력해 주세요.
@@ -54,7 +54,7 @@ function CreateChannel() {
           onChange={(event: ChangeEvent<HTMLInputElement>) => setChannelCode(event.target.value)}
         />
       </label>
-      <button className="button mt-6" type="button" onClick={fetchPostCreateChannel} disabled={!channelCode || !channelName}>채널 생성</button>
+      <button className="button mt-8" type="button" onClick={fetchPostCreateChannel} disabled={!channelCode || !channelName}>채널 생성</button>
     </div>
   );
 }

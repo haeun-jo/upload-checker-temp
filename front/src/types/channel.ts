@@ -9,6 +9,15 @@ export interface ChannelInfo {
   updated_at: string; // "2024-05-26T09:09:40"
 }
 
+export interface MyChannelInfo {
+  channel_id: number;
+  // channel_name: string;
+  user_channel_id: number;
+  user_id: number;
+  created_at: string; // "2024-05-26T09:09:40"
+  updated_at: string; // "2024-05-26T09:09:40"
+}
+
 export interface getCheckPeriodList {
   checks: string[]; // 체크한 사람 이름 배열
   date: string;
